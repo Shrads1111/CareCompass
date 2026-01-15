@@ -17,7 +17,7 @@ db.defaults({ users: [], history: [], admins: [], patients: [], logs: [], clinic
 app.use(bodyParser.json());
 
 // Serve frontend static files from project root
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Password hashing utilities
 function hashPassword(password) {

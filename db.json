@@ -92,6 +92,20 @@
       "hydration": "",
       "food": "full",
       "meds": ""
+    },
+    {
+      "patientId": "alex",
+      "createdAt": 1768487324108,
+      "mood": "😊",
+      "antecedent": "Denied a request",
+      "behavior": "Aggression towards others",
+      "consequence": "Ignored",
+      "note": "",
+      "sleepStart": "21:00",
+      "sleepEnd": "07:00",
+      "hydration": "offered_refused",
+      "food": "full",
+      "meds": "given"
     }
   ],
   "clinicianNotes": [],
@@ -102,7 +116,16 @@
       "expiresAt": 1766321925634
     }
   },
-  "doctors": [],
+  "doctors": [
+    {
+      "id": "1768487198310",
+      "name": "Test doc",
+      "email": "testuser_9876@example.com",
+      "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+      "role": "doctor",
+      "createdAt": 1768487198310
+    }
+  ],
   "caregivers": [
     {
       "id": "1768447304369",
@@ -111,7 +134,25 @@
       "password": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
       "role": "caregiver",
       "createdAt": 1768447304370
+    },
+    {
+      "id": "1768487041931",
+      "name": "Test User",
+      "email": "testuser_9876@example.com",
+      "password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+      "role": "caregiver",
+      "createdAt": 1768487041931
     }
   ],
-  "sessions": {}
+  "sessions": {
+    "5cb836510da1b41700514f50f392b3f85110c1aa9f624c381324e64b034253d1": {
+      "user": {
+        "id": "1768487041931",
+        "name": "Test User",
+        "email": "testuser_9876@example.com",
+        "role": "caregiver"
+      },
+      "expiresAt": 1768573663145
+    }
+  }
 }
