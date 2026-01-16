@@ -1620,8 +1620,15 @@
         });
 
         // --- INIT ---
-        window.onload = function () {
+        window.onload = async function () {
             loadContrast();
+            // Sync data from server first
+            try {
+                await CareData.syncFromServer();
+                console.log('Data synced from server');
+            } catch (e) {
+                console.error('Sync error:', e);
+            }
             hydrateStats();
             renderPatients();
             populateAnalysisSelect();
