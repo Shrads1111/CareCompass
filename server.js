@@ -11,6 +11,15 @@ const ClinicianNote = require('./models/ClinicianNote');
 const Session = require('./models/Session');
 const ShareLink = require('./models/ShareLink');
 
+// Initialize OpenAI if available
+let OpenAI = null;
+try {
+	OpenAI = require('openai');
+} catch (e) {
+	console.log('OpenAI package not installed. Install with: npm install openai');
+	console.log('AI analysis will use basic analysis fallback.');
+}
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -197,7 +206,26 @@ app.get('/api/me', requireAuth, (req, res) => {
 // Patients
 app.get('/api/patients', requireAuth, async (req, res) => {
 	try {
-		const patients = await Patient.find({});
+		let patients;
+		if (req.user.role === 'caregiver') {
+			// Caregivers see all patients
+			patients = await Patient.find({});
+		} else if (req.user.role === 'doctor') {
+			// Doctors see:
+			// 1. Patients explicitly assigned to them
+			// 2. Patients with no assignment (backward compatibility with old data)
+			patients = await Patient.find({
+				$or: [
+					{ assignedDoctorId: req.user.email },
+					{ assignedDoctorIds: req.user.email },
+					{ assignedDoctorIds: { $size: 0 } }, // Unassigned patients (old data)
+					{ assignedDoctorIds: null },
+					{ assignedDoctorIds: { $exists: false } }
+				]
+			});
+		} else {
+			patients = [];
+		}
 		res.json(patients);
 	} catch (error) {
 		console.error('Get patients error:', error);
@@ -211,6 +239,12 @@ app.post('/api/patients', requireAuth, async (req, res) => {
 		if (!p || !p.id) return res.status(400).json({ error: 'id required' });
 		const exists = await Patient.findOne({ id: p.id });
 		if (exists) return res.status(409).json({ error: 'patient exists' });
+		
+		// Auto-assign to doctor if creating as doctor
+		if (req.user.role === 'doctor') {
+			p.assignedDoctorIds = [req.user.email];
+		}
+		
 		const patient = await Patient.create(p);
 		res.status(201).json(patient);
 	} catch (error) {
@@ -218,6 +252,50 @@ app.post('/api/patients', requireAuth, async (req, res) => {
 		if (error.code === 11000) {
 			return res.status(409).json({ error: 'patient exists' });
 		}
+		res.status(500).json({ error: 'Server error' });
+	}
+});
+
+// Assign patient to doctor(s)
+app.post('/api/patients/:id/assign', requireAuth, async (req, res) => {
+	try {
+		if (req.user.role !== 'caregiver') {
+			return res.status(403).json({ error: 'Only caregivers can assign patients' });
+		}
+		
+		const { patientId } = req.params;
+		const { doctorEmails } = req.body;
+		
+		if (!Array.isArray(doctorEmails) || doctorEmails.length === 0) {
+			return res.status(400).json({ error: 'doctorEmails array required' });
+		}
+		
+		const patient = await Patient.findOne({ id: patientId });
+		if (!patient) {
+			return res.status(404).json({ error: 'Patient not found' });
+		}
+		
+		patient.assignedDoctorIds = doctorEmails;
+		await patient.save();
+		
+		res.json({ ok: true, patient });
+	} catch (error) {
+		console.error('Assign patient error:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
+});
+
+// Get all doctors (for assignment UI)
+app.get('/api/doctors', requireAuth, async (req, res) => {
+	try {
+		if (req.user.role !== 'caregiver') {
+			return res.status(403).json({ error: 'Only caregivers can list doctors' });
+		}
+		
+		const doctors = await Doctor.find({}, { email: 1, name: 1, _id: 0 });
+		res.json(doctors);
+	} catch (error) {
+		console.error('Get doctors error:', error);
 		res.status(500).json({ error: 'Server error' });
 	}
 });
@@ -328,6 +406,181 @@ app.post('/api/notes/:patientId', requireAuth, async (req, res) => {
 		res.status(500).json({ error: 'Server error' });
 	}
 });
+
+// AI Analysis endpoint
+app.get('/api/analysis/:patientId', requireAuth, async (req, res) => {
+	try {
+		console.log(`[AI Analysis] Request received for patient: ${req.params.patientId}`);
+		const patientId = req.params.patientId;
+		
+		// Get patient info
+		const patient = await Patient.findOne({ id: patientId });
+		if (!patient) {
+			console.error(`Patient not found: ${patientId}`);
+			return res.status(404).json({ error: `Patient with ID "${patientId}" not found in database` });
+		}
+
+		// Get last 7 days of logs
+		const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+		const logs = await Log.find({
+			patientId: patientId,
+			createdAt: { $gte: sevenDaysAgo }
+		}).sort({ createdAt: 1 });
+
+		if (logs.length === 0) {
+			return res.json({
+				analysis: 'No data available for the last 7 days. Please ensure patient logs are being recorded regularly.',
+				hasData: false
+			});
+		}
+
+		// Format data for AI analysis
+		const patientData = {
+			patientId: patient.id,
+			patientName: patient.name || `Patient ${patient.id}`,
+			diagnosis: patient.diagnosis || 'Not specified',
+			daysAnalyzed: logs.length,
+			logs: logs.map(log => ({
+				date: new Date(log.createdAt).toLocaleDateString(),
+				time: new Date(log.createdAt).toLocaleTimeString(),
+				mood: log.mood || 'Not recorded',
+				sleep: log.sleepStart && log.sleepEnd ? `${log.sleepStart} - ${log.sleepEnd}` : 'Not recorded',
+				hydration: log.hydration || 'Not recorded',
+				food: log.food || 'Not recorded',
+				medication: log.meds || 'Not recorded',
+				antecedent: log.antecedent || '',
+				behavior: log.behavior || '',
+				consequence: log.consequence || '',
+				note: log.note || ''
+			}))
+		};
+
+		// Generate AI analysis if OpenAI is configured
+		if (OpenAI && process.env.OPENAI_API_KEY) {
+			try {
+				const openai = new OpenAI({
+					apiKey: process.env.OPENAI_API_KEY
+				});
+
+				const prompt = `You are a healthcare AI assistant analyzing patient care data. Analyze the following 7-day patient data and provide a comprehensive text analysis focusing on:
+
+1. Overall condition trends (improving, stable, or concerning)
+2. Sleep patterns and quality
+3. Nutrition and hydration compliance
+4. Medication adherence
+5. Mood patterns and behavioral observations
+6. Any concerning patterns or red flags
+7. Recommendations for care adjustments
+
+Patient Information:
+- Name: ${patientData.patientName}
+- Diagnosis: ${patientData.diagnosis}
+- Days with data: ${patientData.daysAnalyzed}
+
+Daily Logs:
+${patientData.logs.map((log, idx) => `
+Day ${idx + 1} (${log.date}):
+- Time: ${log.time}
+- Mood: ${log.mood}
+- Sleep: ${log.sleep}
+- Hydration: ${log.hydration}
+- Food: ${log.food}
+- Medication: ${log.medication}
+${log.antecedent ? `- Antecedent: ${log.antecedent}` : ''}
+${log.behavior ? `- Behavior: ${log.behavior}` : ''}
+${log.consequence ? `- Consequence: ${log.consequence}` : ''}
+${log.note ? `- Note: ${log.note}` : ''}
+`).join('\n')}
+
+Provide a detailed, professional analysis in 3-4 paragraphs. Be specific about patterns, concerns, and recommendations.`;
+
+				const completion = await openai.chat.completions.create({
+					model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+					messages: [
+						{
+							role: 'system',
+							content: 'You are a professional healthcare AI assistant that provides detailed, accurate, and helpful analysis of patient care data. Always be professional, empathetic, and focus on actionable insights.'
+						},
+						{
+							role: 'user',
+							content: prompt
+						}
+					],
+					max_tokens: 1000,
+					temperature: 0.7
+				});
+
+				const analysis = completion.choices[0].message.content;
+				res.json({
+					analysis,
+					hasData: true,
+					generatedAt: Date.now()
+				});
+			} catch (aiError) {
+				console.error('AI analysis error:', aiError);
+				// Fallback to basic analysis if AI fails
+				res.json({
+					analysis: generateBasicAnalysis(patientData),
+					hasData: true,
+					error: 'AI analysis unavailable, showing basic analysis'
+				});
+			}
+		} else {
+			// Fallback to basic analysis if OpenAI not configured
+			res.json({
+				analysis: generateBasicAnalysis(patientData),
+				hasData: true,
+				note: 'AI analysis not configured. Set OPENAI_API_KEY in .env file for AI-powered analysis.'
+			});
+		}
+	} catch (error) {
+		console.error('Analysis error:', error);
+		console.error('Error stack:', error.stack);
+		res.status(500).json({ 
+			error: 'Server error generating analysis',
+			message: error.message,
+			details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+		});
+	}
+});
+
+// Helper function for basic analysis when AI is not available
+function generateBasicAnalysis(patientData) {
+	const logs = patientData.logs;
+	
+	// Calculate averages and patterns
+	const moods = logs.filter(l => l.mood && l.mood !== 'Not recorded' && l.mood !== '—').map(l => l.mood);
+	const foodCompliance = logs.filter(l => l.food === 'full').length;
+	const medCompliance = logs.filter(l => l.medication === 'given').length;
+	const hydrationCompliance = logs.filter(l => l.hydration && (l.hydration.includes('drank') || l.hydration === 'full')).length;
+	
+	const avgMood = moods.length > 0 ? moods.join(', ') : 'Insufficient data';
+	const foodPercent = ((foodCompliance / logs.length) * 100).toFixed(0);
+	const medPercent = ((medCompliance / logs.length) * 100).toFixed(0);
+	const hydrationPercent = ((hydrationCompliance / logs.length) * 100).toFixed(0);
+	
+	let analysis = `**7-Day Analysis for ${patientData.patientName}**\n\n`;
+	analysis += `**Overview:** This analysis covers ${logs.length} days of recorded data for ${patientData.patientName} (${patientData.diagnosis}).\n\n`;
+	
+	analysis += `**Mood Patterns:** ${moods.length > 0 ? `Observed moods: ${avgMood}` : 'Limited mood data available'}.\n\n`;
+	
+	analysis += `**Compliance Metrics:**\n`;
+	analysis += `- Food intake: ${foodPercent}% full meals\n`;
+	analysis += `- Medication: ${medPercent}% given on time\n`;
+	analysis += `- Hydration: ${hydrationPercent}% compliance\n\n`;
+	
+	analysis += `**Recommendations:** `;
+	if (foodPercent < 70) analysis += 'Monitor food intake closely. ';
+	if (medPercent < 90) analysis += 'Review medication schedule adherence. ';
+	if (hydrationPercent < 60) analysis += 'Encourage increased hydration. ';
+	if (foodPercent >= 70 && medPercent >= 90 && hydrationPercent >= 60) {
+		analysis += 'Overall compliance is good. Continue current care plan.';
+	}
+	
+	analysis += `\n\n*Note: For detailed AI-powered analysis, configure OPENAI_API_KEY in your environment variables.*`;
+	
+	return analysis;
+}
 
 // Fallback for share links (simple redirect page)
 app.get('/share/:code', (req, res) => {

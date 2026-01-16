@@ -319,38 +319,40 @@ async function syncFromServer() {
         }
         const patients = await patientsRes.json();
         const store = loadStore();
-        // Only sync if server has patients; otherwise keep local defaults
-        if (patients.length > 0) {
-            // Convert MongoDB _id to id if needed, and remove _id
-            const serverPatients = patients.map(p => {
-                const { _id, ...rest } = p;
-                return rest;
-            });
-            
-            // Merge with default data to ensure all required fields exist
-            const defaultPatients = defaultData.patients || [];
-            store.patients = serverPatients.map(sp => {
-                // Find matching default patient by id
-                const defaultPatient = defaultPatients.find(dp => dp.id === sp.id);
-                if (defaultPatient) {
-                    // Merge: use server data but fill in missing fields from defaults
-                    return { ...defaultPatient, ...sp };
-                }
-                // If no default found, ensure at least basic fields exist
-                return {
-                    id: sp.id,
-                    name: sp.name || `Patient ${sp.id}`,
-                    diagnosis: sp.diagnosis || 'Not specified',
-                    status: sp.status || 'stable',
-                    sleepHours: sp.sleepHours || [],
-                    ...sp
-                };
-            });
-            store.logs = [];
-            store.clinicianNotes = [];
-            store.shareLinks = store.shareLinks || {};
+        
+        // Convert MongoDB _id to id if needed, and remove _id
+        const serverPatients = patients.map(p => {
+            const { _id, ...rest } = p;
+            return rest;
+        });
+        
+        // Merge with default data to ensure all required fields exist
+        const defaultPatients = defaultData.patients || [];
+        store.patients = serverPatients.map(sp => {
+            // Find matching default patient by id
+            const defaultPatient = defaultPatients.find(dp => dp.id === sp.id);
+            if (defaultPatient) {
+                // Merge: use server data but fill in missing fields from defaults
+                return { ...defaultPatient, ...sp };
+            }
+            // If no default found, ensure at least basic fields exist
+            return {
+                id: sp.id,
+                name: sp.name || `Patient ${sp.id}`,
+                diagnosis: sp.diagnosis || 'Not specified',
+                status: sp.status || 'stable',
+                sleepHours: sp.sleepHours || [],
+                ...sp
+            };
+        });
+        
+        // Clear logs and notes before fetching new ones
+        store.logs = [];
+        store.clinicianNotes = [];
+        store.shareLinks = store.shareLinks || {};
 
-            // fetch logs & notes for each patient
+        // fetch logs & notes for each patient
+        if (store.patients.length > 0) {
             await Promise.all(store.patients.map(async p => {
                 try {
                     const lres = await fetch(`${API_BASE}/api/logs/${encodeURIComponent(p.id)}`, {
@@ -395,6 +397,8 @@ async function syncFromServer() {
                     console.error('Error fetching share link:', e);
                 }
             }));
+        } else {
+            console.log('No patients from server');
         }
         saveStore(store);
         return true;

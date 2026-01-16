@@ -188,10 +188,10 @@
                 </button>
             </div>
 
-            <div class="grid-2">
+            <!-- <div class="grid-2">
                 <button class="btn btn-outline">Add quick photo</button>
                 <button class="btn btn-outline">Tag staff</button>
-            </div>
+            </div> -->
 
             <button class="btn btn-primary w-full" style="margin-top: 12px;" onclick="saveLog()"
                 data-i18n="save_log">Save Log Entry</button>
@@ -208,7 +208,7 @@
             <div id="historyList" class="timeline" style="margin-top: 10px;"></div>
         </div>
 
-        <div class="card" style="background: #eff6ff; border: 1px dashed var(--primary);">
+        <!-- <div class="card" style="background: #eff6ff; border: 1px dashed var(--primary);">
             <div class="flex-between flex-row">
                 <div>
                     <h4 data-i18n="share_data">Share Data</h4>
@@ -223,7 +223,7 @@
                 </div>
             </div>
             <div id="shareInfo" class="text-muted" style="margin-top: 8px; font-size: 0.9rem;">No active link.</div>
-        </div>
+        </div> -->
 
     </div>
 
@@ -449,28 +449,28 @@
             broadcastRefresh();
         }
 
-        function renderShareInfo() {
-            const link = CareData.getShareLink(currentPatientId());
-            if (!link) {
-                shareInfo.textContent = 'No active link.';
-                return;
-            }
-            const mins = CareData.minutesUntil(link.expiresAt);
-            shareInfo.textContent = `${link.url} (expires in ${mins}m)`;
-        }
+        // function renderShareInfo() {
+        //     const link = CareData.getShareLink(currentPatientId());
+        //     if (!link) {
+        //         shareInfo.textContent = 'No active link.';
+        //         return;
+        //     }
+        //     const mins = CareData.minutesUntil(link.expiresAt);
+        //     shareInfo.textContent = `${link.url} (expires in ${mins}m)`;
+        // }
 
-        function generateShareLink() {
-            const link = CareData.upsertShareLink(currentPatientId());
-            renderShareInfo();
-            alert(`Secure Link Generated: ${link.url}\nValid for 24 hours.`);
-        }
+        // function generateShareLink() {
+        //     const link = CareData.upsertShareLink(currentPatientId());
+        //     renderShareInfo();
+        //     alert(`Secure Link Generated: ${link.url}\nValid for 24 hours.`);
+        // }
 
-        function copyShareLink() {
-            const link = CareData.getShareLink(currentPatientId());
-            if (!link) return alert('No active link to copy.');
-            navigator.clipboard?.writeText(link.url);
-            alert('Link copied to clipboard.');
-        }
+        // function copyShareLink() {
+        //     const link = CareData.getShareLink(currentPatientId());
+        //     if (!link) return alert('No active link to copy.');
+        //     navigator.clipboard?.writeText(link.url);
+        //     alert('Link copied to clipboard.');
+        // }
 
         function selectHydration(el) {
             const container = document.getElementById('hydrationOptions');
