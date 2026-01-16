@@ -1,18 +1,21 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
 const crypto = require('crypto');
+const connectDB = require('./config/database');
+const { Doctor, Caregiver } = require('./models/User');
+const Patient = require('./models/Patient');
+const Log = require('./models/Log');
+const ClinicianNote = require('./models/ClinicianNote');
+const Session = require('./models/Session');
+const ShareLink = require('./models/ShareLink');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-const dbFile = path.join(__dirname, 'db.json');
-const adapter = new FileSync(dbFile);
-const db = low(adapter);
-
-db.defaults({ users: [], history: [], admins: [], patients: [], logs: [], clinicianNotes: [], shareLinks: {}, doctors: [], caregivers: [], sessions: {} }).write();
+// Connect to MongoDB
+connectDB();
 
 app.use(bodyParser.json());
 
@@ -34,24 +37,29 @@ function generateToken() {
 }
 
 // Authentication middleware
-function requireAuth(req, res, next) {
-	const token = req.headers.authorization?.replace('Bearer ', '') || req.query.token;
-	if (!token) {
-		return res.status(401).json({ error: 'Authentication required' });
+async function requireAuth(req, res, next) {
+	try {
+		const token = req.headers.authorization?.replace('Bearer ', '') || req.query.token;
+		if (!token) {
+			return res.status(401).json({ error: 'Authentication required' });
+		}
+		const session = await Session.findOne({ token });
+		if (!session || session.expiresAt < Date.now()) {
+			return res.status(401).json({ error: 'Invalid or expired session' });
+		}
+		req.user = session.user;
+		next();
+	} catch (error) {
+		console.error('Auth middleware error:', error);
+		return res.status(500).json({ error: 'Server error' });
 	}
-	const session = db.get(`sessions.${token}`).value();
-	if (!session || session.expiresAt < Date.now()) {
-		return res.status(401).json({ error: 'Invalid or expired session' });
-	}
-	req.user = session.user;
-	next();
 }
 
 app.get('/api/ping', (req, res) => res.json({ ok: true }));
 
 // Authentication endpoints
 // Register endpoint
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
 	try {
 		const { name, email, password, confirmPassword, role } = req.body;
 
@@ -79,29 +87,26 @@ app.post('/api/register', (req, res) => {
 		}
 
 		// Check if user already exists
-		const collection = role === 'doctor' ? 'doctors' : 'caregivers';
-		const existingUser = db.get(collection).find({ email }).value();
+		const UserModel = role === 'doctor' ? Doctor : Caregiver;
+		const existingUser = await UserModel.findOne({ email });
 		if (existingUser) {
 			return res.status(409).json({ error: 'Email already registered' });
 		}
 
 		// Create user
 		const hashedPassword = hashPassword(password);
-		const user = {
-			id: Date.now().toString(),
+		const user = await UserModel.create({
 			name,
 			email,
 			password: hashedPassword,
 			role,
 			createdAt: Date.now()
-		};
-
-		db.get(collection).push(user).write();
+		});
 
 		res.status(201).json({
 			message: 'Account created successfully',
 			user: {
-				id: user.id,
+				id: user._id.toString(),
 				name: user.name,
 				email: user.email,
 				role: user.role
@@ -109,12 +114,15 @@ app.post('/api/register', (req, res) => {
 		});
 	} catch (error) {
 		console.error('Registration error:', error);
+		if (error.code === 11000) {
+			return res.status(409).json({ error: 'Email already registered' });
+		}
 		res.status(500).json({ error: 'Server error during registration' });
 	}
 });
 
 // Login endpoint
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
 	try {
 		const { email, password, role } = req.body;
 
@@ -126,8 +134,8 @@ app.post('/api/login', (req, res) => {
 			return res.status(400).json({ error: 'Invalid role' });
 		}
 
-		const collection = role === 'doctor' ? 'doctors' : 'caregivers';
-		const user = db.get(collection).find({ email }).value();
+		const UserModel = role === 'doctor' ? Doctor : Caregiver;
+		const user = await UserModel.findOne({ email });
 
 		if (!user) {
 			return res.status(401).json({ error: 'Invalid credentials' });
@@ -141,20 +149,21 @@ app.post('/api/login', (req, res) => {
 		const token = generateToken();
 		const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
-		db.set(`sessions.${token}`, {
+		await Session.create({
+			token,
 			user: {
-				id: user.id,
+				id: user._id.toString(),
 				name: user.name,
 				email: user.email,
 				role: user.role
 			},
 			expiresAt
-		}).write();
+		});
 
 		res.json({
 			token,
 			user: {
-				id: user.id,
+				id: user._id.toString(),
 				name: user.name,
 				email: user.email,
 				role: user.role
@@ -167,14 +176,15 @@ app.post('/api/login', (req, res) => {
 });
 
 // Logout endpoint
-app.post('/api/logout', (req, res) => {
+app.post('/api/logout', async (req, res) => {
 	try {
 		const token = req.headers.authorization?.replace('Bearer ', '') || req.body.token;
 		if (token) {
-			db.unset(`sessions.${token}`).write();
+			await Session.deleteOne({ token });
 		}
 		res.json({ message: 'Logged out successfully' });
 	} catch (error) {
+		console.error('Logout error:', error);
 		res.status(500).json({ error: 'Server error' });
 	}
 });
@@ -185,72 +195,138 @@ app.get('/api/me', requireAuth, (req, res) => {
 });
 
 // Patients
-app.get('/api/patients', (req, res) => {
-	const patients = db.get('patients').value();
-	res.json(patients);
+app.get('/api/patients', requireAuth, async (req, res) => {
+	try {
+		const patients = await Patient.find({});
+		res.json(patients);
+	} catch (error) {
+		console.error('Get patients error:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
 });
 
-app.post('/api/patients', (req, res) => {
-	const p = req.body;
-	if (!p || !p.id) return res.status(400).json({ error: 'id required' });
-	const exists = db.get('patients').find({ id: p.id }).value();
-	if (exists) return res.status(409).json({ error: 'patient exists' });
-	db.get('patients').push(p).write();
-	res.status(201).json(p);
+app.post('/api/patients', requireAuth, async (req, res) => {
+	try {
+		const p = req.body;
+		if (!p || !p.id) return res.status(400).json({ error: 'id required' });
+		const exists = await Patient.findOne({ id: p.id });
+		if (exists) return res.status(409).json({ error: 'patient exists' });
+		const patient = await Patient.create(p);
+		res.status(201).json(patient);
+	} catch (error) {
+		console.error('Create patient error:', error);
+		if (error.code === 11000) {
+			return res.status(409).json({ error: 'patient exists' });
+		}
+		res.status(500).json({ error: 'Server error' });
+	}
 });
 
-app.delete('/api/patients/:id', (req, res) => {
-	const id = req.params.id;
-	db.get('patients').remove({ id }).write();
-	db.get('logs').remove({ patientId: id }).write();
-	db.get('clinicianNotes').remove({ patientId: id }).write();
-	db.unset(`shareLinks.${id}`).write();
-	res.json({ ok: true });
+app.delete('/api/patients/:id', requireAuth, async (req, res) => {
+	try {
+		const id = req.params.id;
+		await Patient.deleteOne({ id });
+		await Log.deleteMany({ patientId: id });
+		await ClinicianNote.deleteMany({ patientId: id });
+		await ShareLink.deleteOne({ patientId: id });
+		res.json({ ok: true });
+	} catch (error) {
+		console.error('Delete patient error:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
 });
 
 // Logs
-app.get('/api/logs/:patientId', (req, res) => {
-	const logs = db.get('logs').filter({ patientId: req.params.patientId }).sortBy('createdAt').reverse().value();
-	res.json(logs);
+app.get('/api/logs/:patientId', requireAuth, async (req, res) => {
+	try {
+		const logs = await Log.find({ patientId: req.params.patientId })
+			.sort({ createdAt: -1 });
+		res.json(logs);
+	} catch (error) {
+		console.error('Get logs error:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
 });
 
-app.post('/api/logs/:patientId', (req, res) => {
-	const payload = req.body || {};
-	const log = Object.assign({ patientId: req.params.patientId, createdAt: Date.now() }, payload);
-	db.get('logs').push(log).write();
-	res.status(201).json(log);
+app.post('/api/logs/:patientId', requireAuth, async (req, res) => {
+	try {
+		const payload = req.body || {};
+		const log = await Log.create({
+			patientId: req.params.patientId,
+			createdAt: Date.now(),
+			...payload
+		});
+		res.status(201).json(log);
+	} catch (error) {
+		console.error('Create log error:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
 });
 
 // Share links (24h)
-app.post('/api/share/:patientId', (req, res) => {
-	const id = req.params.patientId;
-	const code = (Math.random().toString(36).slice(2, 8)).toUpperCase();
-	const url = `http://localhost:${port}/share/${code}`;
-	const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-	db.set(`shareLinks.${id}`, { code, url, expiresAt }).write();
-	res.json(db.get(`shareLinks.${id}`).value());
+app.post('/api/share/:patientId', requireAuth, async (req, res) => {
+	try {
+		const id = req.params.patientId;
+		const code = (Math.random().toString(36).slice(2, 8)).toUpperCase();
+		const url = `http://localhost:${port}/share/${code}`;
+		const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+		
+		// Delete existing link if any
+		await ShareLink.deleteOne({ patientId: id });
+		
+		const shareLink = await ShareLink.create({
+			patientId: id,
+			code,
+			url,
+			expiresAt
+		});
+		
+		res.json(shareLink);
+	} catch (error) {
+		console.error('Create share link error:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
 });
 
-app.get('/api/share/:patientId', (req, res) => {
-	const link = db.get(`shareLinks.${req.params.patientId}`).value();
-	if (!link) return res.status(404).json({});
-	if (link.expiresAt < Date.now()) {
-		db.unset(`shareLinks.${req.params.patientId}`).write();
-		return res.status(404).json({});
+app.get('/api/share/:patientId', requireAuth, async (req, res) => {
+	try {
+		const link = await ShareLink.findOne({ patientId: req.params.patientId });
+		if (!link) return res.status(404).json({});
+		if (link.expiresAt < Date.now()) {
+			await ShareLink.deleteOne({ patientId: req.params.patientId });
+			return res.status(404).json({});
+		}
+		res.json(link);
+	} catch (error) {
+		console.error('Get share link error:', error);
+		res.status(500).json({ error: 'Server error' });
 	}
-	res.json(link);
 });
 
 // Clinician notes
-app.get('/api/notes/:patientId', (req, res) => {
-	const notes = db.get('clinicianNotes').filter({ patientId: req.params.patientId }).sortBy('createdAt').reverse().value();
-	res.json(notes);
+app.get('/api/notes/:patientId', requireAuth, async (req, res) => {
+	try {
+		const notes = await ClinicianNote.find({ patientId: req.params.patientId })
+			.sort({ createdAt: -1 });
+		res.json(notes);
+	} catch (error) {
+		console.error('Get notes error:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
 });
 
-app.post('/api/notes/:patientId', (req, res) => {
-	const note = { patientId: req.params.patientId, note: req.body.note || '', createdAt: Date.now() };
-	db.get('clinicianNotes').push(note).write();
-	res.status(201).json(note);
+app.post('/api/notes/:patientId', requireAuth, async (req, res) => {
+	try {
+		const note = await ClinicianNote.create({
+			patientId: req.params.patientId,
+			note: req.body.note || '',
+			createdAt: Date.now()
+		});
+		res.status(201).json(note);
+	} catch (error) {
+		console.error('Create note error:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
 });
 
 // Fallback for share links (simple redirect page)

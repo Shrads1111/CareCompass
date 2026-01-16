@@ -277,6 +277,16 @@ function aggregateMedsWeekly(patientId) {
 const API_BASE = '';
 let apiAvailable = false;
 
+// Helper to get auth headers
+function getAuthHeaders() {
+    const token = localStorage.getItem('authToken');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
+}
+
 async function checkApi() {
     try {
         const res = await fetch(`${API_BASE}/api/ping`);
@@ -293,46 +303,103 @@ async function checkApi() {
 
 async function syncFromServer() {
     if (!(await checkApi())) return false;
+    const token = localStorage.getItem('authToken');
+    if (!token) return false; // Need to be logged in
+    
     try {
-        const patientsRes = await fetch(`${API_BASE}/api/patients`);
-        if (!patientsRes.ok) return false;
+        const patientsRes = await fetch(`${API_BASE}/api/patients`, {
+            headers: getAuthHeaders()
+        });
+        if (!patientsRes.ok) {
+            if (patientsRes.status === 401) {
+                // Token expired, clear it
+                localStorage.removeItem('authToken');
+            }
+            return false;
+        }
         const patients = await patientsRes.json();
         const store = loadStore();
         // Only sync if server has patients; otherwise keep local defaults
         if (patients.length > 0) {
-            store.patients = patients;
+            // Convert MongoDB _id to id if needed, and remove _id
+            const serverPatients = patients.map(p => {
+                const { _id, ...rest } = p;
+                return rest;
+            });
+            
+            // Merge with default data to ensure all required fields exist
+            const defaultPatients = defaultData.patients || [];
+            store.patients = serverPatients.map(sp => {
+                // Find matching default patient by id
+                const defaultPatient = defaultPatients.find(dp => dp.id === sp.id);
+                if (defaultPatient) {
+                    // Merge: use server data but fill in missing fields from defaults
+                    return { ...defaultPatient, ...sp };
+                }
+                // If no default found, ensure at least basic fields exist
+                return {
+                    id: sp.id,
+                    name: sp.name || `Patient ${sp.id}`,
+                    diagnosis: sp.diagnosis || 'Not specified',
+                    status: sp.status || 'stable',
+                    sleepHours: sp.sleepHours || [],
+                    ...sp
+                };
+            });
             store.logs = [];
             store.clinicianNotes = [];
             store.shareLinks = store.shareLinks || {};
 
             // fetch logs & notes for each patient
-            await Promise.all(patients.map(async p => {
+            await Promise.all(store.patients.map(async p => {
                 try {
-                    const lres = await fetch(`${API_BASE}/api/logs/${encodeURIComponent(p.id)}`);
+                    const lres = await fetch(`${API_BASE}/api/logs/${encodeURIComponent(p.id)}`, {
+                        headers: getAuthHeaders()
+                    });
                     if (lres.ok) {
                         const logs = await lres.json();
-                        store.logs.push(...logs);
+                        // Remove _id from logs
+                        const cleanLogs = logs.map(log => {
+                            const { _id, ...rest } = log;
+                            return rest;
+                        });
+                        store.logs.push(...cleanLogs);
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.error('Error fetching logs:', e);
+                }
                 try {
-                    const nres = await fetch(`${API_BASE}/api/notes/${encodeURIComponent(p.id)}`);
+                    const nres = await fetch(`${API_BASE}/api/notes/${encodeURIComponent(p.id)}`, {
+                        headers: getAuthHeaders()
+                    });
                     if (nres.ok) {
                         const notes = await nres.json();
-                        store.clinicianNotes.push(...notes);
+                        const cleanNotes = notes.map(note => {
+                            const { _id, ...rest } = note;
+                            return rest;
+                        });
+                        store.clinicianNotes.push(...cleanNotes);
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.error('Error fetching notes:', e);
+                }
                 try {
-                    const sres = await fetch(`${API_BASE}/api/share/${encodeURIComponent(p.id)}`);
+                    const sres = await fetch(`${API_BASE}/api/share/${encodeURIComponent(p.id)}`, {
+                        headers: getAuthHeaders()
+                    });
                     if (sres.ok) {
                         const sl = await sres.json();
                         store.shareLinks[p.id] = sl;
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.error('Error fetching share link:', e);
+                }
             }));
         }
         saveStore(store);
         return true;
     } catch (e) {
+        console.error('Sync error:', e);
         return false;
     }
 }
@@ -349,11 +416,18 @@ async function addPatient(patient) {
     (async () => {
         try {
             if (await checkApi()) {
-                await fetch(`${API_BASE}/api/patients`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(patient)
+                const res = await fetch(`${API_BASE}/api/patients`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(patient)
                 });
+                if (!res.ok && res.status === 401) {
+                    localStorage.removeItem('authToken');
+                }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error('Error syncing patient:', e);
+        }
     })();
 }
 
@@ -372,9 +446,17 @@ async function removePatient(patientId) {
     (async () => {
         try {
             if (await checkApi()) {
-                await fetch(`${API_BASE}/api/patients/${encodeURIComponent(patientId)}`, { method: 'DELETE' });
+                const res = await fetch(`${API_BASE}/api/patients/${encodeURIComponent(patientId)}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                if (!res.ok && res.status === 401) {
+                    localStorage.removeItem('authToken');
+                }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error('Error deleting patient:', e);
+        }
     })();
 }
 
@@ -388,11 +470,18 @@ function addLog(patientId, payload) {
     (async () => {
         try {
             if (await checkApi()) {
-                await fetch(`${API_BASE}/api/logs/${encodeURIComponent(patientId)}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                const res = await fetch(`${API_BASE}/api/logs/${encodeURIComponent(patientId)}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(payload)
                 });
+                if (!res.ok && res.status === 401) {
+                    localStorage.removeItem('authToken');
+                }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error('Error syncing log:', e);
+        }
     })();
 
     return log;
@@ -414,11 +503,18 @@ function addClinicianNote(patientId, note) {
     (async () => {
         try {
             if (await checkApi()) {
-                await fetch(`${API_BASE}/api/notes/${encodeURIComponent(patientId)}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ note })
+                const res = await fetch(`${API_BASE}/api/notes/${encodeURIComponent(patientId)}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ note })
                 });
+                if (!res.ok && res.status === 401) {
+                    localStorage.removeItem('authToken');
+                }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error('Error syncing note:', e);
+        }
     })();
 }
 
