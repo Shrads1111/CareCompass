@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,12 +15,13 @@
             --surface: #ffffff;
             --primary: #007bff;
             --danger: #dc3545;
-            --success: #28a745; /* Green */
+            --success: #28a745;
+            /* Green */
             --warning: #ffc107;
             --text-main: #333;
             --text-muted: #6c757d;
             --border: #e9ecef;
-            --shadow: 0 4px 6px rgba(0,0,0,0.04);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
         }
 
         body {
@@ -47,6 +49,7 @@
             padding: 10px 0;
             margin-bottom: 10px;
         }
+
         .container.nav-content {
             display: flex;
             justify-content: space-between;
@@ -54,37 +57,127 @@
             width: 95%;
             margin: 0 auto;
         }
-        .logo { font-weight: 700; font-size: 1.2rem; }
-        .flex-row { display: flex; gap: 10px; align-items: center; }
-        
-        .btn { border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; text-decoration: none; display: inline-block;}
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
-        .btn-outline:hover { background: var(--bg); }
-        .btn-primary { background: var(--primary); color: white; padding: 8px 16px; }
-        .btn-secondary { background: var(--text-muted); color: white; padding: 6px 12px; }
-        .pill { background: #eef2ff; color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .ghost-pill { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+        }
+
+        .btn-secondary {
+            background: var(--text-muted);
+            color: white;
+            padding: 6px 12px;
+        }
+
+        .pill {
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .ghost-pill {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
 
         /* --- STATS SIDEBAR --- */
-        .stats-sidebar { display: flex; flex-direction: column; gap: 16px; }
+        .stats-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .stat-card-solid {
             padding: 24px 20px;
             border-radius: 12px;
             color: white;
             box-shadow: var(--shadow);
             text-align: center;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             min-height: 140px;
         }
-        .stat-card-solid h3 { margin: 0 0 10px 0; font-size: 0.9rem; opacity: 0.9; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-card-solid h1 { margin: 0; font-size: 3.5rem; font-weight: 700; line-height: 1; }
-        .stat-card-solid p { margin: 8px 0 0 0; font-size: 0.85rem; opacity: 0.8; }
-        .bg-primary { background-color: var(--primary); }
-        .bg-danger { background-color: var(--danger); }
-        .bg-warning { background-color: var(--warning); color: #333; }
+
+        .stat-card-solid h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card-solid h1 {
+            margin: 0;
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-card-solid p {
+            margin: 8px 0 0 0;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .bg-primary {
+            background-color: var(--primary);
+        }
+
+        .bg-danger {
+            background-color: var(--danger);
+        }
+
+        .bg-warning {
+            background-color: var(--warning);
+            color: #333;
+        }
 
         /* --- MAIN CARDS --- */
-        .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
         .card {
             background: var(--surface);
             border-radius: 12px;
@@ -92,10 +185,24 @@
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
         }
-        .col-span-2 { grid-column: span 2; }
-        .text-muted { color: var(--text-muted); }
-        .flex-between { justify-content: space-between; }
-        h2, h3 { margin-top: 0; }
+
+        .col-span-2 {
+            grid-column: span 2;
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .flex-between {
+            justify-content: space-between;
+        }
+
+        h2,
+        h3 {
+            margin-top: 0;
+        }
+
         .stat-chip {
             padding: 12px 15px;
             border-radius: 8px;
@@ -103,26 +210,64 @@
             flex-direction: column;
             gap: 4px;
         }
+
         .stat-chip strong {
             font-size: 0.85rem;
             color: var(--text-main);
         }
-        
-        .patient-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .patient-table th { text-align: left; color: var(--text-muted); font-size: 0.8rem; padding-bottom: 10px; border-bottom: 2px solid var(--bg); }
-        .patient-table td { padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .status-risk { background: #ffebee; color: var(--danger); }
-        .status-stable { background: #e8f5e9; color: #2e7d32; }
+
+        .patient-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .patient-table th {
+            text-align: left;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg);
+        }
+
+        .patient-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-risk {
+            background: #ffebee;
+            color: var(--danger);
+        }
+
+        .status-stable {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
 
         /* --- CHART (UPDATED) --- */
         .chart-container {
-            display: flex; align-items: flex-end; justify-content: space-around;
-            height: 200px; /* Increased height */
-            background: var(--bg); border-radius: 8px; padding: 20px 15px 10px 15px; 
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 200px;
+            /* Increased height */
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 20px 15px 10px 15px;
             margin-top: 15px;
             position: relative;
         }
+
         .chart-y-axis {
             position: absolute;
             left: 4px;
@@ -136,36 +281,54 @@
             color: var(--text-muted);
             pointer-events: none;
         }
+
         .chart-y-tick {
             position: relative;
         }
+
         .chart-y-tick::after {
             content: '';
             position: absolute;
             right: -6px;
             top: 50%;
             width: 6px;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
         }
-        .bar-group { 
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-end; 
-            height: 100%; width: 10%; 
+
+        .bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            width: 10%;
         }
-        
+
         /* Bar styles */
-        .bar { 
-            width: 100%; 
-            border-radius: 4px; 
-            transition: height 0.4s ease-out, background-color 0.3s; 
-            min-height: 2px; /* Ensure visible even if 0 */
+        .bar {
+            width: 100%;
+            border-radius: 4px;
+            transition: height 0.4s ease-out, background-color 0.3s;
+            min-height: 2px;
+            /* Ensure visible even if 0 */
             margin-bottom: 2px;
         }
-        
+
         /* Specific Bar Defaults */
-        .bar-active { background: #ccc; } 
-        .bar-sleep { background: #eee; }
-        
-        .axis-label { margin-top: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .bar-active {
+            background: #ccc;
+        }
+
+        .bar-sleep {
+            background: #eee;
+        }
+
+        .axis-label {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
 
         .sleep-summary {
             display: flex;
@@ -178,47 +341,125 @@
         }
 
         /* --- TIMELINE --- */
-        .timeline-item { border-left: 2px solid var(--border); padding-left: 15px; margin-bottom: 15px; position: relative; }
-        .timeline-item::before { content: ''; position: absolute; left: -5px; top: 5px; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; }
+        .timeline-item {
+            border-left: 2px solid var(--border);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 5px;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
 
         /* --- FORM --- */
-        input, select, textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; font-family: inherit; }
-        .w-full { width: 100%; }
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .w-full {
+            width: 100%;
+        }
 
         /* --- MODAL --- */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.5); display: none;
-            justify-content: center; align-items: center;
-            z-index: 2000; backdrop-filter: blur(2px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(2px);
         }
+
         .modal-content {
-            background: white; padding: 30px; border-radius: 12px;
-            width: 90%; max-width: 450px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             animation: fadeIn 0.3s ease-out;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        body.high-contrast { --bg: #000; --surface: #000; --text-main: #fff; --border: #333; --shadow: none; }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body.high-contrast {
+            --bg: #000;
+            --surface: #000;
+            --text-main: #fff;
+            --border: #333;
+            --shadow: none;
+        }
+
         @media (max-width: 1024px) {
-            .dashboard-layout { grid-template-columns: 1fr; }
-            .stats-sidebar { flex-direction: row; flex-wrap: wrap; }
-            .stat-card-solid { flex: 1; }
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-sidebar {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .stat-card-solid {
+                flex: 1;
+            }
         }
     </style>
+    <script src="i18n.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            I18n.renderLanguageSelector('doctor-lang-container');
+        });
+    </script>
 </head>
+
 <body>
 
     <header>
         <div class="container nav-content">
-            <div class="logo">CareCompass <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: normal;">| Clinician Mode</span></div>
+            <div class="logo"><span data-i18n="app_title">CareCompass</span> <span
+                    style="font-size: 0.9rem; color: var(--text-muted); font-weight: normal;"
+                    data-i18n="clinician_mode">| Clinician Mode</span></div>
+            <div id="doctor-lang-container"></div>
             <div class="flex-row">
-                <span class="pill ghost-pill">Live overview</span>
-                <span>Dr. House</span>
-                <button class="btn btn-outline" onclick="toggleContrast()" style="padding: 5px 12px; width:auto;">👁️</button>
-                <a href="index.html" class="btn btn-outline" style="padding: 5px 12px;">← Home</a>
-                <button class="btn btn-outline" onclick="handleLogout()" style="padding: 5px 15px;">Logout</button>
+                <span class="pill ghost-pill" data-i18n="live_overview">Live overview</span>
+                <span data-i18n="doctor_name">Dr. House</span>
+                <button class="btn btn-outline btn-sm" onclick="toggleContrast()"
+                    style="padding: 5px 12px; width:auto;">👁️</button>
+                <a href="index.html" class="btn btn-outline" style="padding: 5px 12px;" data-i18n="back_home">← Home</a>
+                <button class="btn btn-outline" onclick="handleLogout()" style="padding: 5px 15px;"
+                    data-i18n="logout">Logout</button>
             </div>
         </div>
     </header>
@@ -226,19 +467,19 @@
     <div class="dashboard-layout">
         <aside class="stats-sidebar">
             <div class="stat-card-solid bg-primary">
-                <h3>Total Patients</h3>
+                <h3 data-i18n="total_patients">Total Patients</h3>
                 <h1 id="statTotal">3</h1>
-                <p id="statTotalCopy">New this month</p>
+                <p id="statTotalCopy" data-i18n="new_this_month">New this month</p>
             </div>
             <div class="stat-card-solid bg-danger">
-                <h3>Critical Alerts</h3>
+                <h3 data-i18n="critical_alerts">Critical Alerts</h3>
                 <h1 id="statAlerts">1</h1>
-                <p>Requires review</p>
+                <p data-i18n="requires_review">Requires review</p>
             </div>
             <div class="stat-card-solid bg-warning">
-                <h3>Pending Reports</h3>
+                <h3 data-i18n="pending_reports">Pending Reports</h3>
                 <h1 id="statReports" style="color: #333;">12</h1>
-                <p style="color: #333;">End of month</p>
+                <p style="color: #333;" data-i18n="end_of_month">End of month</p>
             </div>
         </aside>
 
@@ -246,31 +487,36 @@
             <div class="card col-span-2">
                 <div class="flex-between flex-row">
                     <div>
-                        <div class="pill" style="margin-bottom: 8px;">Morning rounds</div>
-                        <h2 style="margin-bottom: 6px;">Risk & Report Overview</h2>
-                        <p class="text-muted" style="margin:0;">Action-first dashboard with PDF export, live search, and smart correlations.</p>
+                        <div class="pill" style="margin-bottom: 8px;" data-i18n="morning_rounds">Morning rounds</div>
+                        <h2 style="margin-bottom: 6px;" data-i18n="risk_report_overview">Risk & Report Overview</h2>
+                        <p class="text-muted" style="margin:0;" data-i18n="dashboard_desc">Action-first dashboard with
+                            PDF export, live search, and
+                            smart correlations.</p>
                     </div>
                     <div>
-                         <button class="btn btn-primary" onclick="openAddPatient()">+ New Patient</button>
+                        <button class="btn btn-primary" onclick="openAddPatient()" data-i18n="new_patient">+ New
+                            Patient</button>
                     </div>
                 </div>
             </div>
 
             <div class="card" style="min-height: 400px;">
                 <div class="flex-between flex-row" style="gap: 10px; margin-bottom: 15px;">
-                    <h3>Patient Overview</h3>
+                    <h3 data-i18n="patient_overview">Patient Overview</h3>
                     <div class="flex-row">
-                        <input id="searchBox" type="text" placeholder="Search..." style="width: 140px; margin-bottom: 0;">
-                        <span class="pill ghost-pill" id="filterPill" style="display:none;">Filter: all</span>
+                        <input id="searchBox" type="text" placeholder="Search..."
+                            data-i18n-placeholder="search_placeholder" style="width: 140px; margin-bottom: 0;">
+                        <span class="pill ghost-pill" id="filterPill" style="display:none;"
+                            data-i18n="filter_all">Filter: all</span>
                     </div>
                 </div>
                 <table class="patient-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>ID</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th data-i18n="name">Name</th>
+                            <th data-i18n="id_col">ID</th>
+                            <th data-i18n="status_col">Status</th>
+                            <th data-i18n="action_col">Action</th>
                         </tr>
                     </thead>
                     <tbody id="patientTableBody"></tbody>
@@ -278,39 +524,45 @@
             </div>
 
             <div class="card">
-                <h3 style="margin-bottom: 15px;">Quick Stats</h3>
+                <h3 style="margin-bottom: 15px;" data-i18n="quick_stats">Quick Stats</h3>
                 <div id="quickStats" style="display: flex; flex-direction: column; gap: 12px;">
                     <div class="stat-chip" style="background: #e8f5e9; border-left: 3px solid #28a745;">
-                        <strong>Avg Sleep</strong>
+                        <strong data-i18n="avg_sleep">Avg Sleep</strong>
                         <span class="text-muted" id="statAvgSleep">--</span>
                     </div>
                     <div class="stat-chip" style="background: #e0f2fe; border-left: 3px solid #0ea5e9;">
-                        <strong>Water Compliance</strong>
+                        <strong data-i18n="water_compliance">Water Compliance</strong>
                         <span class="text-muted" id="statWaterComp">--</span>
                     </div>
                     <div class="stat-chip" style="background: #fef3c7; border-left: 3px solid #f59e0b;">
-                        <strong>Food Compliance</strong>
+                        <strong data-i18n="food_compliance">Food Compliance</strong>
                         <span class="text-muted" id="statFoodComp">--</span>
                     </div>
                     <div class="stat-chip" style="background: #e0e7ff; border-left: 3px solid #6366f1;">
-                        <strong>Med Compliance</strong>
+                        <strong data-i18n="med_compliance">Med Compliance</strong>
                         <span class="text-muted" id="statMedsComp">--</span>
                     </div>
                 </div>
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--border);">
                     <h4 style="margin: 0 0 12px 0; font-size: 0.95rem;">Recent Notes</h4>
-                    <div id="analysisTimeline" class="timeline" style="margin: 0; max-height: 200px; overflow-y: auto;"></div>
-                    <textarea id="clinicianNote" rows="2" placeholder="Add recommendation..." style="margin-top: 12px;"></textarea>
-                    <button class="btn btn-primary w-full" style="margin-top: 8px;" onclick="saveClinicianNote()">Update</button>
+                    <div id="analysisTimeline" class="timeline" style="margin: 0; max-height: 200px; overflow-y: auto;">
+                    </div>
+                    <textarea id="clinicianNote" rows="2" placeholder="Add recommendation..."
+                        style="margin-top: 12px;"></textarea>
+                    <button class="btn btn-primary w-full" style="margin-top: 8px;"
+                        onclick="saveClinicianNote()">Update</button>
                 </div>
             </div>
 
             <div class="card col-span-2">
                 <div class="flex-between flex-row" style="margin-bottom: 15px;">
-                    <h3>Analysis: <span id="analysisName">Alex Doe</span></h3>
+                    <h3><span data-i18n="analysis_prefix">Analysis: </span><span id="analysisName">Alex Doe</span></h3>
                     <div class="flex-row">
-                        <button class="btn btn-primary" onclick="generatePatientPDF()" style="margin-right: 10px;">📥 Download PDF Report</button>
-                        <select id="analysisSelect" style="width: 150px; margin-bottom:0;" onchange="selectAnalysis(this.value)"></select>
+                        <button class="btn btn-primary" onclick="generatePatientPDF()" style="margin-right: 10px;"
+                            data-i18n="download_pdf">📥
+                            Download PDF Report</button>
+                        <select id="analysisSelect" style="width: 150px; margin-bottom:0;"
+                            onchange="selectAnalysis(this.value)"></select>
                     </div>
                 </div>
 
@@ -318,78 +570,209 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
                     <!-- Sleep Graph -->
                     <div>
-                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted);">Sleep vs Incidents</h4>
-                        <p class="text-muted" style="text-align: center; font-size: 0.75rem; margin:0 0 8px 0;">Sleep hours vs behavior incidents</p>
+                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted);"
+                            data-i18n="sleep_vs_incidents">Sleep vs Incidents
+                        </h4>
+                        <p class="text-muted" style="text-align: center; font-size: 0.75rem; margin:0 0 8px 0;"
+                            data-i18n="sleep_vs_incidents_desc">Sleep
+                            hours vs behavior incidents</p>
                         <div class="chart-container" id="chartSleep" style="height: 160px;">
                             <div class="chart-y-axis" id="yAxisSleep"></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">M</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">T</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">W</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">T</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">F</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">S</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">S</div></div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">M</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">T</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">W</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">T</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">F</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">S</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">S</div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Water Graph -->
                     <div>
-                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted);">Water Intake</h4>
-                        <p class="text-muted" style="text-align: center; font-size: 0.75rem; margin:0 0 8px 0;">Drank events per day (expected: 3)</p>
+                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted);"
+                            data-i18n="water_intake">Water Intake</h4>
+                        <p class="text-muted" style="text-align: center; font-size: 0.75rem; margin:0 0 8px 0;"
+                            data-i18n="water_intake_desc">Drank
+                            events per day (expected: 3)</p>
                         <div class="chart-container" id="chartWater" style="height: 160px;">
                             <div class="chart-y-axis" id="yAxisWater"></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">M</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">T</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">W</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">T</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">F</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">S</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">S</div></div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">M</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">T</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">W</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">T</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">F</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">S</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">S</div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Food Graph -->
                     <div>
-                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted);">Food Intake</h4>
-                        <p class="text-muted" style="text-align: center; font-size: 0.75rem; margin:0 0 8px 0;">Meals eaten per day (expected: 3)</p>
+                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted);"
+                            data-i18n="food_intake">Food Intake</h4>
+                        <p class="text-muted" style="text-align: center; font-size: 0.75rem; margin:0 0 8px 0;"
+                            data-i18n="food_intake_desc">Meals
+                            eaten per day (expected: 3)</p>
                         <div class="chart-container" id="chartFood" style="height: 160px;">
                             <div class="chart-y-axis" id="yAxisFood"></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">M</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">T</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">W</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">T</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">F</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">S</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">S</div></div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">M</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">T</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">W</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">T</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">F</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">S</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">S</div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Medication Graph -->
                     <div>
-                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted);">Medication</h4>
-                        <p class="text-muted" style="text-align: center; font-size: 0.75rem; margin:0 0 8px 0;">Doses given per day (expected: 3)</p>
+                        <h4 style="margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted);"
+                            data-i18n="medication_title">Medication</h4>
+                        <p class="text-muted" style="text-align: center; font-size: 0.75rem; margin:0 0 8px 0;"
+                            data-i18n="medication_desc_chart">Doses
+                            given per day (expected: 3)</p>
                         <div class="chart-container" id="chartMeds" style="height: 160px;">
                             <div class="chart-y-axis" id="yAxisMeds"></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">M</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">T</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">W</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">T</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">F</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">S</div></div>
-                            <div class="bar-group"><div class="bar bar-active"></div><div class="bar bar-sleep"></div><div class="axis-label">S</div></div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">M</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">T</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">W</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">T</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">F</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">S</div>
+                            </div>
+                            <div class="bar-group">
+                                <div class="bar bar-active"></div>
+                                <div class="bar bar-sleep"></div>
+                                <div class="axis-label">S</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Pie Chart Overview -->
                 <div style="margin-top: 25px; padding-top: 25px; border-top: 2px solid var(--border);">
-                    <h4 style="margin: 0 0 10px 0; font-size: 1rem;">Weekly Average Distribution</h4>
-                    <p class="text-muted" style="text-align: center; font-size: 0.8rem; margin:0 0 20px 0;">All factors comparison (7-day average)</p>
-                    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 1rem;" data-i18n="weekly_avg_dist">Weekly Average
+                        Distribution</h4>
+                    <p class="text-muted" style="text-align: center; font-size: 0.8rem; margin:0 0 20px 0;"
+                        data-i18n="weekly_avg_desc">All factors
+                        comparison (7-day average)</p>
+                    <div
+                        style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
                         <div id="pieChartContainer" style="position: relative; width: 220px; height: 220px;">
                             <canvas id="pieChart" width="220" height="220"></canvas>
-                            <div id="pieCenterText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
-                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--text-main);" id="pieTotal">--</div>
+                            <div id="pieCenterText"
+                                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                                <div style="font-size: 1.5rem; font-weight: bold; color: var(--text-main);"
+                                    id="pieTotal">--</div>
                                 <div style="font-size: 0.75rem; color: var(--text-muted);">Total Score</div>
                             </div>
                         </div>
@@ -397,29 +780,33 @@
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div style="width: 20px; height: 20px; border-radius: 4px; background: #c3e6cb;"></div>
                                 <div style="flex: 1;">
-                                    <div style="font-size: 0.85rem; font-weight: 600;">Sleep</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="pieSleepLabel">--</div>
+                                    <div style="font-size: 0.85rem; font-weight: 600;" data-i18n="pie_sleep">Sleep</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="pieSleepLabel">--
+                                    </div>
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div style="width: 20px; height: 20px; border-radius: 4px; background: #0ea5e9;"></div>
                                 <div style="flex: 1;">
-                                    <div style="font-size: 0.85rem; font-weight: 600;">Water</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="pieWaterLabel">--</div>
+                                    <div style="font-size: 0.85rem; font-weight: 600;" data-i18n="pie_water">Water</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="pieWaterLabel">--
+                                    </div>
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div style="width: 20px; height: 20px; border-radius: 4px; background: #f59e0b;"></div>
                                 <div style="flex: 1;">
-                                    <div style="font-size: 0.85rem; font-weight: 600;">Food</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="pieFoodLabel">--</div>
+                                    <div style="font-size: 0.85rem; font-weight: 600;" data-i18n="pie_food">Food</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="pieFoodLabel">--
+                                    </div>
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <div style="width: 20px; height: 20px; border-radius: 4px; background: #6366f1;"></div>
                                 <div style="flex: 1;">
                                     <div style="font-size: 0.85rem; font-weight: 600;">Medication</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="pieMedsLabel">--</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);" id="pieMedsLabel">--
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -452,7 +839,7 @@
 
     <script>
         // --- AUTHENTICATION CHECK (MUST RUN FIRST) ---
-        (function() {
+        (function () {
             const token = localStorage.getItem('authToken');
             const role = localStorage.getItem('userRole');
             if (!token || role !== 'doctor') {
@@ -465,22 +852,22 @@
                     'Authorization': `Bearer ${token}`
                 }
             })
-            .then(res => {
-                if (!res.ok) {
+                .then(res => {
+                    if (!res.ok) {
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('userRole');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userEmail');
+                        window.location.href = 'auth.html';
+                    }
+                })
+                .catch(() => {
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('userRole');
                     localStorage.removeItem('userName');
                     localStorage.removeItem('userEmail');
                     window.location.href = 'auth.html';
-                }
-            })
-            .catch(() => {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('userName');
-                localStorage.removeItem('userEmail');
-                window.location.href = 'auth.html';
-            });
+                });
         })();
 
         // --- LOGOUT FUNCTION ---
@@ -527,11 +914,11 @@
         function renderPatients(filter = '') {
             const patients = CareData.getPatients();
             const term = filter.toLowerCase();
-            const filtered = patients.filter(p => 
+            const filtered = patients.filter(p =>
                 p.name.toLowerCase().includes(term) || p.id.includes(term)
             );
-            
-            if(filterPill) filterPill.textContent = term ? `Filter: "${filter}"` : 'Filter: all';
+
+            if (filterPill) filterPill.textContent = term ? `Filter: "${filter}"` : 'Filter: all';
 
             patientTableBody.innerHTML = filtered.map(p => {
                 const badge = p.status === 'risk' ? 'status-risk' : 'status-stable';
@@ -554,14 +941,14 @@
             const patients = CareData.getPatients();
             analysisSelect.innerHTML = patients.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
             // Auto-select first if available
-            if(patients.length > 0) selectAnalysis(patients[0].id);
+            if (patients.length > 0) selectAnalysis(patients[0].id);
         }
 
         function selectAnalysis(id) {
             analysisSelect.value = id;
             const patients = CareData.getPatients();
             const p = patients.find(x => x.id === id);
-            if(!p) return;
+            if (!p) return;
 
             analysisName.textContent = p.name;
             renderTimeline(id);
@@ -579,16 +966,16 @@
 
             // Render Sleep Graph
             renderSleepChart(id, status, data);
-            
+
             // Render Water Graph
             renderWaterChart(waterAgg, data.labels);
-            
+
             // Render Food Graph
             renderFoodChart(foodAgg, data.labels);
-            
+
             // Render Medication Graph
             renderMedsChart(medsAgg, data.labels);
-            
+
             // Render Combined Comparison Graph
             renderCombinedChart(data, waterAgg, foodAgg, medsAgg, status);
         }
@@ -814,7 +1201,7 @@
             values.forEach((value, index) => {
                 if (value <= 0) return;
                 const sliceAngle = (value / 100) * 2 * Math.PI;
-                
+
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
                 ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
@@ -898,17 +1285,17 @@
         // --- MODAL & UI ---
         function openAddPatient() { modal.style.display = 'flex'; }
         function closeAddPatient() { modal.style.display = 'none'; }
-        
+
         async function savePatient() {
             const name = document.getElementById('newPName').value;
             const id = document.getElementById('newPID').value;
             const diagnosis = document.getElementById('newPDiag').value;
             const status = document.getElementById('newPStatus').value;
 
-            if(!name || !id) return alert("Name and ID required");
-            
+            if (!name || !id) return alert("Name and ID required");
+
             try {
-                await CareData.addPatient({ id, name, diagnosis, status, sleepHours: [7,7,7,7,7,7,7] });
+                await CareData.addPatient({ id, name, diagnosis, status, sleepHours: [7, 7, 7, 7, 7, 7, 7] });
                 hydrateStats();
                 renderPatients();
                 populateAnalysisSelect();
@@ -1065,7 +1452,7 @@
                 const waterVal = waterAgg.water[i] || 0;
                 const foodVal = foodAgg.food[i] || 0;
                 const medsVal = medsAgg.meds[i] || 0;
-                
+
                 doc.text(agg.labels[i] || `Day ${i + 1}`, margin, yPos);
                 doc.text(sleepVal, margin + 40, yPos);
                 doc.text(waterVal.toString(), margin + 70, yPos);
@@ -1092,7 +1479,7 @@
                 doc.setFontSize(10);
                 logs.forEach((log, index) => {
                     checkNewPage(40);
-                    
+
                     // Log header with date
                     doc.setFont(undefined, 'bold');
                     const logDate = new Date(log.createdAt);
@@ -1174,7 +1561,7 @@
                     checkNewPage(20);
                     const noteDate = new Date(note.createdAt);
                     const dateStr = noteDate.toLocaleDateString() + ' ' + noteDate.toLocaleTimeString();
-                    
+
                     doc.setFont(undefined, 'bold');
                     doc.text(`${index + 1}. ${dateStr}`, margin, yPos);
                     yPos += lineHeight;
@@ -1202,7 +1589,7 @@
 
             // Generate filename
             const filename = `Patient_Report_${patient.name.replace(/\s+/g, '_')}_${patientId}_${new Date().toISOString().split('T')[0]}.pdf`;
-            
+
             // Save PDF
             doc.save(filename);
         }
@@ -1233,7 +1620,7 @@
         });
 
         // --- INIT ---
-        window.onload = function() {
+        window.onload = function () {
             loadContrast();
             hydrateStats();
             renderPatients();
@@ -1241,4 +1628,5 @@
         };
     </script>
 </body>
+
 </html>

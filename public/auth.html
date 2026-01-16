@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -218,31 +219,42 @@
             text-decoration: underline;
         }
     </style>
+    <script src="i18n.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create a specific container for auth page if needed, or reuse logic
+            // Since I18n.renderLanguageSelector expects an ID, I'll add one.
+            I18n.renderLanguageSelector('auth-lang-container');
+        });
+    </script>
 </head>
+
 <body>
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <h1>CareCompass 🧭</h1>
-                <p>Welcome back! Please sign in or create an account.</p>
+                <div id="auth-lang-container" style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                </div>
+                <h1 data-i18n="app_title">CareCompass 🧭</h1>
+                <p data-i18n="welcome_back">Welcome back! Please sign in or create an account.</p>
             </div>
 
             <!-- Role Selection -->
             <div class="role-selection">
                 <div class="role-btn" id="roleDoctor" onclick="selectRole('doctor')">
                     <span class="icon">👨‍⚕️</span>
-                    <span>Doctor</span>
+                    <span data-i18n="doctor">Doctor</span>
                 </div>
                 <div class="role-btn selected" id="roleCaregiver" onclick="selectRole('caregiver')">
                     <span class="icon">🧑‍⚕️</span>
-                    <span>Caregiver</span>
+                    <span data-i18n="caregiver">Caregiver</span>
                 </div>
             </div>
 
             <!-- Tabs -->
             <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchMode('login')">Login</button>
-                <button class="auth-tab" onclick="switchMode('register')">Register</button>
+                <button class="auth-tab active" onclick="switchMode('login')" data-i18n="login">Login</button>
+                <button class="auth-tab" onclick="switchMode('register')" data-i18n="register">Register</button>
             </div>
 
             <!-- Error/Success Messages -->
@@ -252,40 +264,44 @@
             <!-- Login Form -->
             <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label for="loginEmail">Email</label>
+                    <label for="loginEmail" data-i18n="email">Email</label>
                     <input type="email" id="loginEmail" name="email" required placeholder="your.email@example.com">
                 </div>
                 <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" name="password" required placeholder="Enter your password">
+                    <label for="loginPassword" data-i18n="password">Password</label>
+                    <input type="password" id="loginPassword" name="password" required
+                        placeholder="Enter your password">
                 </div>
-                <button type="submit" class="submit-btn" id="loginBtn">Login</button>
+                <button type="submit" class="submit-btn" id="loginBtn" data-i18n="login">Login</button>
             </form>
 
             <!-- Registration Form -->
             <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
                 <div class="form-group">
-                    <label for="registerName">Full Name</label>
+                    <label for="registerName" data-i18n="full_name">Full Name</label>
                     <input type="text" id="registerName" name="name" required placeholder="John Doe">
                 </div>
                 <div class="form-group">
-                    <label for="registerEmail">Email</label>
+                    <label for="registerEmail" data-i18n="email">Email</label>
                     <input type="email" id="registerEmail" name="email" required placeholder="your.email@example.com">
                 </div>
                 <div class="form-group">
-                    <label for="registerPassword">Password</label>
-                    <input type="password" id="registerPassword" name="password" required placeholder="At least 6 characters">
+                    <label for="registerPassword" data-i18n="password">Password</label>
+                    <input type="password" id="registerPassword" name="password" required
+                        placeholder="At least 6 characters">
                     <div class="password-requirements">Password must be at least 6 characters</div>
                 </div>
                 <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Re-enter your password">
+                    <label for="confirmPassword" data-i18n="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required
+                        placeholder="Re-enter your password">
                 </div>
-                <button type="submit" class="submit-btn" id="registerBtn">Create Account</button>
+                <button type="submit" class="submit-btn" id="registerBtn" data-i18n="create_account">Create
+                    Account</button>
             </form>
 
             <div class="back-link">
-                <a href="index.html">← Back to Home</a>
+                <a href="index.html" data-i18n="back_home">← Back to Home</a>
             </div>
         </div>
     </div>
@@ -296,7 +312,7 @@
         let currentMode = 'login';
 
         // Check if already logged in
-        (function() {
+        (function () {
             const token = localStorage.getItem('authToken');
             const role = localStorage.getItem('userRole');
             if (token && role) {
@@ -306,18 +322,18 @@
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                .then(res => {
-                    if (res.ok) {
-                        // Redirect to appropriate dashboard
-                        window.location.href = role === 'doctor' ? 'doctor.html' : 'caregiver.html';
-                    }
-                })
-                .catch(() => {
-                    // Token invalid, clear storage
-                    localStorage.removeItem('authToken');
-                    localStorage.removeItem('userRole');
-                    localStorage.removeItem('userName');
-                });
+                    .then(res => {
+                        if (res.ok) {
+                            // Redirect to appropriate dashboard
+                            window.location.href = role === 'doctor' ? 'doctor.html' : 'caregiver.html';
+                        }
+                    })
+                    .catch(() => {
+                        // Token invalid, clear storage
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('userRole');
+                        localStorage.removeItem('userName');
+                    });
             }
         })();
 
@@ -332,7 +348,7 @@
             currentMode = mode;
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-            
+
             if (mode === 'login') {
                 document.querySelectorAll('.auth-tab')[0].classList.add('active');
                 document.getElementById('loginForm').classList.add('active');
@@ -465,10 +481,10 @@
                 }
 
                 showSuccess('Account created successfully! Redirecting to login...');
-                
+
                 // Clear form
                 document.getElementById('registerForm').reset();
-                
+
                 // Switch to login after a short delay
                 setTimeout(() => {
                     switchMode('login');
@@ -487,4 +503,5 @@
         }
     </script>
 </body>
+
 </html>
